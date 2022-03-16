@@ -1,7 +1,9 @@
-import { StyleSheet, Text, View,TouchableWithoutFeedback, Keyboard } from 'react-native';
+// import GlobalStyles from './GlobalStyles';
+
+import { StyleSheet, Text, View,TouchableWithoutFeedback, Keyboard, SafeAreaView } from 'react-native';
 import Pomodoro from './Pomodoro';
 import { useState } from 'react';
-
+import SafeViewArea from './SafeViewArea';
 
 
 
@@ -45,12 +47,14 @@ const click=(text, value, func) => {
   return (
     <TouchableWithoutFeedback onPress={() => {
       Keyboard.dismiss();
-      console.log("Dismissed keyboard");
+      // console.log("Dismissed keyboard");
     }}>
-    <View style={className}>
+      <SafeAreaView style={SafeViewArea.AndroidSafeArea}>
+      <View style={className}>
       <Pomodoro isClicked={click} />
       {/* <Text>Hello</Text> */}
-    </View>
+      </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 }

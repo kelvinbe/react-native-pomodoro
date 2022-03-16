@@ -1,8 +1,10 @@
-import { View, Text, StyleSheet, Button, TouchableOpacity, Alert, FlatList  } from "react-native";
+import { View, Text, StyleSheet, Button, TouchableOpacity, Alert, FlatList, SafeAreaView  } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
 import AddTodo from "./Todo";
 import TodoItem from "./TodoItem";
+// import { SafeAreaView } from "react-native-web";
+import Header from "./Header";
 
 export default function Pomodoro({ isClicked }) {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -15,16 +17,24 @@ export default function Pomodoro({ isClicked }) {
   ]);
 
   const funRef = useRef(null);
-  const hourSeconds = 1000;
-  const renderTime = (dimension, time) => {
+  const hourSeconds = 3000;
+  const renderTime = (dimension, minute, seconds) => {
     return (
-      <View>
+      <View style={styles.timerLayout}>
         <View>
-          <Text style={styles.text}>{time}</Text>
+          <Text style={styles.text}>{minute}</Text>
         </View>
         <View>
+          <Text style={styles.text}>
+            :
+          </Text>
+        </View>
+        <View>
+          <Text style={styles.text}>{seconds}</Text>
+        </View>
+        {/* <View>
           <Text style={styles.textMin}>{dimension}</Text>
-        </View>
+        </View> */}
       </View>
     );
   };
@@ -79,7 +89,8 @@ export default function Pomodoro({ isClicked }) {
   };
 
   return (
-    <View>
+    <View style={styles.container}>
+      <Header />
       <View style={styles.pomoSquare}>
         <View style={styles.header}>
           <View style>
@@ -122,7 +133,7 @@ export default function Pomodoro({ isClicked }) {
               const minutes = Math.floor((remainingTime % 3600) / 60);
               const seconds = remainingTime % 60;
 
-              return renderTime("minute", minutes);
+              return renderTime("minute", minutes, seconds);
             }}
           </CountdownCircleTimer>
         </View>
@@ -149,17 +160,21 @@ export default function Pomodoro({ isClicked }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    padding: 10,
+    // justifyContent: 'space-evenly'
+    
+  },
+  timerLayout: {
+      flexDirection: 'row',
+      justifyContent: 'space-evenly'
   },
   pomoSquare: {
     width: 350,
     height: 350,
-    paddingTop: 20,
+    paddingTop: 10,
     paddingBottom: 30,
     borderRadius: 6,
-    marginBottom: 20,
+    marginBottom: 2,
     backgroundColor: "rgba(255, 255, 255, 0.1)",
   },
   timer: {
@@ -169,7 +184,7 @@ const styles = StyleSheet.create({
   },
   text: {
     // textTransform: 'capitalize',
-    fontSize: 60,
+    fontSize: 30,
     color: "white",
     textAlign: "center",
   },
@@ -209,7 +224,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   content: {
-    padding: 40,
+    // padding: 40,
     // backgroundColor: "pink",
     flex: 1,
   },
