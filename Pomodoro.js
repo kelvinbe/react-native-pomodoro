@@ -1,9 +1,11 @@
-import { View, Text, StyleSheet, Button, TouchableOpacity, Alert, FlatList, SafeAreaView  } from "react-native";
+import { View, Text, StyleSheet, Button, TouchableOpacity, Alert, FlatList, SafeAreaView, Animated, Easing   } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
 import AddTodo from "./Todo";
 import TodoItem from "./TodoItem";
 import Header from "./Header";
+import LottieView from 'lottie-react-native';
+
 
 
 
@@ -24,10 +26,38 @@ export default function Pomodoro({ isClicked }) {
     { text: "play on the switch", key: "3" },
   ]);
 
+  // const [progress, setProgress] = useState(Animated.Value(0))
+  const progress = useRef(new Animated.Value(0)).current;
+  const animation = useRef(null);
+  const [pressed, setPressed] = useState(false);
+
+  const onPress = () => {
+    setIsPlaying((prev) => !prev)
+    if(isPlaying){
+    animation.current.pause()
+    setPressed(false)
+
+    }else if(!isPlaying){
+    animation.current.resume()
+    setPressed(true)
+
+
+    }
+  }
+
+  const fadeIn = () => {
+    // Will change fadeAnim value to 1 in 5 seconds
+    console.log('helooooo')
+    Animated.timing(progress, {
+      toValue: 1,
+      duration: 5000,
+      easing: Easing.linear,
+      useNativeDriver: true
+    }).start();
+  };
+
   const funRef = useRef(null);
   
-
-
 
   const renderTime = (dimension, minute, seconds) => {
     return (
@@ -51,6 +81,9 @@ export default function Pomodoro({ isClicked }) {
   };
 
   useEffect(() => {
+    // animation.play();
+    
+
     if (minute !== 0) {
       funRef.current = setTimeout(() => {
         setMinuter(minute - 1);
@@ -127,6 +160,13 @@ export default function Pomodoro({ isClicked }) {
     
   }
 
+
+
+  const resetAnimation = () => {
+    this.animation.reset();
+    this.animation.play();
+  };
+
   const children = ({ remainingTime }) => {
     const hours = Math.floor(remainingTime / 3600);
     const minutes = Math.floor((remainingTime % 3600) / 60);
@@ -196,13 +236,28 @@ export default function Pomodoro({ isClicked }) {
         </View>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => setIsPlaying((prev) => !prev)}
+          onPress={() => onPress()}
         >
           <Text style={styles.textButton}>{isPlaying ? "Stop" : "Start"}</Text>
         </TouchableOpacity>
       </View>
+
+
+     <View style={styles.animationContainer}>
+        <LottieView
+        ref={animation}
+          style={{
+            width: 120,
+            height: 120,
+            backgroundColor: '#D9504A',
+          }}
+          source={require('./assets/eyefocus.json')}
+          autoPlay={false}
+          // OR find more Lottie files @ https://lottiefiles.com/featured
+          // Just click the one you like, place that file in the 'assets' folder to the left, and replace the above 'require' statement
+        />
      
-  
+      </View>
     </View>
   );
 }
@@ -213,6 +268,15 @@ const styles = StyleSheet.create({
     padding: 10,
     // justifyContent: 'space-evenly'
     
+  },
+  animationContainer: {
+    backgroundColor: '#D9504A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+  },
+  buttonContainer: {
+    paddingTop: 20,
   },
   timerLayout: {
       flexDirection: 'row',
