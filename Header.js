@@ -5,7 +5,7 @@ export default function Header() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>
-          POMODORO
+          JIPANGE
       </Text>
       <Image source={require('./assets/adaptive-icon.png')} style={{width: 30, height: 30}}/>
 

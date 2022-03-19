@@ -3,12 +3,20 @@ import React, { useState, useEffect, useRef } from "react";
 import { CountdownCircleTimer } from "react-native-countdown-circle-timer";
 import AddTodo from "./Todo";
 import TodoItem from "./TodoItem";
-// import { SafeAreaView } from "react-native-web";
 import Header from "./Header";
 
+
+
 export default function Pomodoro({ isClicked }) {
+
+
+  const pomoSeconds = 1500;
+  const shortSeconds = 300;
+  const longSeconds = 900;
   const [isPlaying, setIsPlaying] = useState(false);
-  const [minute, setMinuter] = useState(10);
+  const [minute, setMinuter] = useState(25);
+  const [initialTime, setInitialTime] = useState(pomoSeconds)
+  const [duration, setDuration] = useState(pomoSeconds)
   const [click, setClick] = useState(false)
   const [todos, setTodos] = useState([
     { text: "buy coffee", key: "1" },
@@ -17,7 +25,10 @@ export default function Pomodoro({ isClicked }) {
   ]);
 
   const funRef = useRef(null);
-  const hourSeconds = 3000;
+  
+
+
+
   const renderTime = (dimension, minute, seconds) => {
     return (
       <View style={styles.timerLayout}>
@@ -54,6 +65,48 @@ export default function Pomodoro({ isClicked }) {
       return prevTodos.filter((todo) => todo.key != key);
     });
   };
+
+  const switchTimer = (value) => {
+    if(value === 'pomo'){
+      setIsPlaying(false)
+      setDuration(pomoSeconds)
+      setInitialTime(pomoSeconds)
+      setMinuter(25)
+    }else if(value === 'short'){
+      setIsPlaying(false)
+      setDuration(shortSeconds)
+      setInitialTime(shortSeconds)
+      setMinuter(5)
+    }else if(value === 'long'){
+      setIsPlaying(false)
+      setDuration(longSeconds)
+      setInitialTime(longSeconds)
+      setMinuter(15)
+    }
+  }
+
+
+  const setDurationTime = (value) => {
+    if(isPlaying){
+      Alert.alert('Warning', 'Timer is still running. Are you sure you want to switch', [ 
+        {text: 'YES', onPress: () => switchTimer(value)}
+      ])  
+    }else if(!isPlaying){
+      if(value === 'pomo'){
+        setDuration(pomoSeconds)
+        setInitialTime(pomoSeconds)
+        setMinuter(25)
+      }else if(value === 'short'){
+        setDuration(shortSeconds)
+        setInitialTime(shortSeconds)
+        setMinuter(5)
+      }else if(value === 'long'){
+        setDuration(longSeconds)
+        setInitialTime(longSeconds)
+        setMinuter(15)
+      }
+    }
+  }
 
   const submitHandler = (text) => {
 
@@ -96,7 +149,7 @@ export default function Pomodoro({ isClicked }) {
           <View style>
             <TouchableOpacity
               style={styles.buttonHeader}
-              onPress={() => isClicked(true, "pomo")}
+              onPress={() => isClicked(true, "pomo",setDurationTime('pomo'))}
             >
               <Text style={styles.textButtonH}>Pomodoro</Text>
             </TouchableOpacity>
@@ -104,7 +157,7 @@ export default function Pomodoro({ isClicked }) {
           <View>
             <TouchableOpacity
               style={styles.buttonHeader}
-              onPress={() => isClicked(true, "short")}
+              onPress={() => isClicked(true, "short", setDurationTime('short'))}
             >
               <Text style={styles.textButtonH}>Short Break</Text>
             </TouchableOpacity>
@@ -112,7 +165,7 @@ export default function Pomodoro({ isClicked }) {
           <View>
             <TouchableOpacity
               style={styles.buttonHeader}
-              onPress={() => isClicked(true, "long")}
+              onPress={() => isClicked(true, "long", setDurationTime('long'))}
             >
               <Text style={styles.textButtonH}>Long Break</Text>
             </TouchableOpacity>
@@ -122,11 +175,15 @@ export default function Pomodoro({ isClicked }) {
           <CountdownCircleTimer
             {...timerProps}
             isPlaying={isPlaying}
+            key={0}
             colors={["#004777", "#F7B801", "#A30000", "#A30000"]}
-            initialRemainingTime={hourSeconds}
-            duration={hourSeconds}
-            colorsTime={[10, 6, 2, 0]}
-            // children={children
+            initialRemainingTime={initialTime}
+            duration={duration}
+            colorsTime={[25, 15, 2, 0]}
+            onComplete={() => {
+              console.log('ON_COMPLETE BEFORE RETURN')
+              return [true, 25]
+            }}
           >
             {({ remainingTime }) => {
               const hours = Math.floor(remainingTime / 3600);
@@ -144,15 +201,8 @@ export default function Pomodoro({ isClicked }) {
           <Text style={styles.textButton}>{isPlaying ? "Stop" : "Start"}</Text>
         </TouchableOpacity>
       </View>
-      <View style={styles.content}>
-        <AddTodo  submitHandler={submitHandler} click={click}/>
-        <View style={styles.list}>
-          <FlatList
-            data={todos}
-            renderItem={({ item }) => <TodoItem item={item} pressHandler={pressHandler}  />}
-          />
-        </View>
-      </View>
+     
+  
     </View>
   );
 }
@@ -200,7 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   buttonHeader: {
-    backgroundColor: "white",
+    backgroundColor: "#00000026",
     padding: 5,
     width: 100,
     height: 29,
@@ -214,7 +264,7 @@ const styles = StyleSheet.create({
   textButtonH: {
     textTransform: "capitalize",
     fontSize: 16,
-    color: "rgb(217, 85, 80)",
+    color: "white",
     textAlign: "center",
   },
   textMin: {
