@@ -30,6 +30,15 @@ export default function Pomodoro({ isClicked }) {
   const progress = useRef(new Animated.Value(0)).current;
   const animation = useRef(null);
   const [pressed, setPressed] = useState(false);
+  const [key, setKey] = useState(0)
+
+
+  const [anime, setAnime] = useState(require('./assets/eyefocus.json'))
+  const [animeColor, setAnimeColor] = useState('#D9504A')
+  const [lottieContainer, setLottieContainer] = useState({backgroundColor: '#D9504A',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flex: 1,})
 
   const onPress = () => {
     setIsPlaying((prev) => !prev)
@@ -58,6 +67,9 @@ export default function Pomodoro({ isClicked }) {
 
   const funRef = useRef(null);
   
+
+  let width = 170
+  let height = 170
 
   const renderTime = (dimension, minute, seconds) => {
     return (
@@ -105,22 +117,43 @@ export default function Pomodoro({ isClicked }) {
       setDuration(pomoSeconds)
       setInitialTime(pomoSeconds)
       setMinuter(25)
+      setAnime(require('./assets/eyefocus.json'))
+      setAnimeColor('#D9504A')
+      setLottieContainer({backgroundColor: '#D9504A',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,})
+      
     }else if(value === 'short'){
       setIsPlaying(false)
       setDuration(shortSeconds)
       setInitialTime(shortSeconds)
       setMinuter(5)
+      setAnime(require('./assets/shortBreak.json'))
+      setAnimeColor('#4C9195')
+      setLottieContainer({backgroundColor: '#4C9195',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,})
     }else if(value === 'long'){
       setIsPlaying(false)
       setDuration(longSeconds)
       setInitialTime(longSeconds)
       setMinuter(15)
+      setAnime(require('./assets/relaxing.json'))
+      setAnimeColor('#457CA3')
+      setLottieContainer({backgroundColor: '#457CA3',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,})
     }
   }
 
 
   const setDurationTime = (value) => {
     if(isPlaying){
+      setKey(prevKey => prevKey +1)
+      setIsPlaying(false)
       Alert.alert('Warning', 'Timer is still running. Are you sure you want to switch', [ 
         {text: 'YES', onPress: () => switchTimer(value)}
       ])  
@@ -129,14 +162,35 @@ export default function Pomodoro({ isClicked }) {
         setDuration(pomoSeconds)
         setInitialTime(pomoSeconds)
         setMinuter(25)
+        setAnime(require('./assets/eyefocus.json'))
+        setAnimeColor('#D9504A')
+        setLottieContainer({backgroundColor: '#D9504A',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,})
       }else if(value === 'short'){
         setDuration(shortSeconds)
         setInitialTime(shortSeconds)
         setMinuter(5)
+        setAnime(require('./assets/shortBreak.json'))
+        setAnimeColor('#4C9195')
+        setLottieContainer({backgroundColor: '#4C9195',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,})
+
       }else if(value === 'long'){
         setDuration(longSeconds)
         setInitialTime(longSeconds)
         setMinuter(15)
+        setAnime(require('./assets/relaxing.json'))
+        setAnimeColor('#457CA3')
+
+        setLottieContainer({backgroundColor: '#457CA3',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,})
+
       }
     }
   }
@@ -215,14 +269,14 @@ export default function Pomodoro({ isClicked }) {
           <CountdownCircleTimer
             {...timerProps}
             isPlaying={isPlaying}
-            key={0}
+            key={key}
             colors={["#004777", "#F7B801", "#A30000", "#A30000"]}
             initialRemainingTime={initialTime}
             duration={duration}
-            colorsTime={[25, 15, 2, 0]}
+            colorsTime={[25, 15, 5, 0]}
             onComplete={() => {
-              console.log('ON_COMPLETE BEFORE RETURN')
-              return [true, 25]
+              setKey(prevKey => prevKey +1)
+              setIsPlaying(false)
             }}
           >
             {({ remainingTime }) => {
@@ -243,15 +297,15 @@ export default function Pomodoro({ isClicked }) {
       </View>
 
 
-     <View style={styles.animationContainer}>
+     <View style={lottieContainer}>
         <LottieView
         ref={animation}
           style={{
-            width: 120,
-            height: 120,
-            backgroundColor: '#D9504A',
+            width: width,
+            height: height,
+            backgroundColor: animeColor,
           }}
-          source={require('./assets/eyefocus.json')}
+          source={anime}
           autoPlay={false}
           // OR find more Lottie files @ https://lottiefiles.com/featured
           // Just click the one you like, place that file in the 'assets' folder to the left, and replace the above 'require' statement
