@@ -9,7 +9,7 @@ import LottieView from 'lottie-react-native';
 
 
 
-export default function Pomodoro({ isClicked }) {
+export default function Pomodoro() {
 
 
   const pomoSeconds = 1500;
@@ -31,14 +31,16 @@ export default function Pomodoro({ isClicked }) {
   const animation = useRef(null);
   const [pressed, setPressed] = useState(false);
   const [key, setKey] = useState(0)
-
-
+  const [canChange, setCanChange] = useState(false)
   const [anime, setAnime] = useState(require('./assets/eyefocus.json'))
   const [animeColor, setAnimeColor] = useState('#D9504A')
   const [lottieContainer, setLottieContainer] = useState({backgroundColor: '#D9504A',
   alignItems: 'center',
   justifyContent: 'center',
   flex: 1,})
+
+const [className, setClassName] = useState({flex: 1,backgroundColor: '#D9504A',alignItems: 'center',justifyContent: 'center',
+})
 
   const onPress = () => {
     setIsPlaying((prev) => !prev)
@@ -105,14 +107,11 @@ export default function Pomodoro({ isClicked }) {
     }
   });
 
-  const pressHandler = (key) => {
-    setTodos((prevTodos) => {
-      return prevTodos.filter((todo) => todo.key != key);
-    });
-  };
 
   const switchTimer = (value) => {
     if(value === 'pomo'){
+      setKey(prevKey => prevKey +1)
+      
       setIsPlaying(false)
       setDuration(pomoSeconds)
       setInitialTime(pomoSeconds)
@@ -123,8 +122,14 @@ export default function Pomodoro({ isClicked }) {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,})
+        setClassName({backgroundColor: '#D9504A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,})
       
     }else if(value === 'short'){
+      setKey(prevKey => prevKey +1)
+
       setIsPlaying(false)
       setDuration(shortSeconds)
       setInitialTime(shortSeconds)
@@ -135,7 +140,14 @@ export default function Pomodoro({ isClicked }) {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,})
+      setClassName({backgroundColor: '#4C9195',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,})
+      
     }else if(value === 'long'){
+      setKey(prevKey => prevKey +1)
+
       setIsPlaying(false)
       setDuration(longSeconds)
       setInitialTime(longSeconds)
@@ -146,19 +158,41 @@ export default function Pomodoro({ isClicked }) {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,})
+      setClassName({backgroundColor: '#457CA3',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,})
     }
   }
 
 
   const setDurationTime = (value) => {
     if(isPlaying){
-      setKey(prevKey => prevKey +1)
+      // setKey(prevKey => prevKey +1)
       setIsPlaying(false)
+      animation.current.pause()
+
       Alert.alert('Warning', 'Timer is still running. Are you sure you want to switch', [ 
-        {text: 'YES', onPress: () => switchTimer(value)}
+        {text: 'YES', onPress: () => {
+          switchTimer(value)
+          setCanChange(true)
+        }
+        
+        },
+        {text: 'No', onPress: () => {
+        setIsPlaying(true)
+        animation.current.resume()
+
+          
+        }
+        
+        }
+        
       ])  
     }else if(!isPlaying){
       if(value === 'pomo'){
+        setKey(prevKey => prevKey +1)
+        setIsPlaying(false)
         setDuration(pomoSeconds)
         setInitialTime(pomoSeconds)
         setMinuter(25)
@@ -168,66 +202,51 @@ export default function Pomodoro({ isClicked }) {
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,})
+        setClassName({backgroundColor: '#D9504A',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,})
       }else if(value === 'short'){
+        setKey(prevKey => prevKey +1)
+        setIsPlaying(false)
         setDuration(shortSeconds)
         setInitialTime(shortSeconds)
         setMinuter(5)
         setAnime(require('./assets/shortBreak.json'))
         setAnimeColor('#4C9195')
-        setLottieContainer({backgroundColor: '#4C9195',
+        setLottieContainer({
+        backgroundColor: '#4C9195',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,})
+        setClassName({backgroundColor: '#4C9195',
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,})
 
       }else if(value === 'long'){
+        setKey(prevKey => prevKey +1)
+        setIsPlaying(false)
         setDuration(longSeconds)
         setInitialTime(longSeconds)
         setMinuter(15)
         setAnime(require('./assets/relaxing.json'))
         setAnimeColor('#457CA3')
-
-        setLottieContainer({backgroundColor: '#457CA3',
+        setLottieContainer({
+        backgroundColor: '#457CA3',
         alignItems: 'center',
         justifyContent: 'center',
         flex: 1,})
+        setClassName({backgroundColor: '#457CA3',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,})
 
       }
     }
   }
 
-  const submitHandler = (text) => {
 
-    if(text.length > 2) {
-      setTodos((prevTodos) => {
-        return [
-          {text: text, key: Math.random().toString()},
-          ...prevTodos
-        ]
-      }) 
-      setClick(true)
-
-    }else{
-      Alert.alert('OOPS', 'Tasks must be over 3 chars long', [
-        {text: 'OK', onPress: () => console.log('Alert closed')}
-      ])
-    }
-    
-  }
-
-
-
-  const resetAnimation = () => {
-    this.animation.reset();
-    this.animation.play();
-  };
-
-  const children = ({ remainingTime }) => {
-    const hours = Math.floor(remainingTime / 3600);
-    const minutes = Math.floor((remainingTime % 3600) / 60);
-    const seconds = remainingTime % 60;
-
-    return `${minutes}:${seconds}`;
-  };
 
   const timerProps = {
     isPlaying: false,
@@ -235,7 +254,11 @@ export default function Pomodoro({ isClicked }) {
     // strokeWidth: 6
   };
 
+  console.log('canChangeInPomo', canChange)
+
+
   return (
+    <View style={className}>
     <View style={styles.container}>
       <Header />
       <View style={styles.pomoSquare}>
@@ -243,7 +266,7 @@ export default function Pomodoro({ isClicked }) {
           <View style>
             <TouchableOpacity
               style={styles.buttonHeader}
-              onPress={() => isClicked(true, "pomo",setDurationTime('pomo'))}
+              onPress={() => setDurationTime('pomo')}
             >
               <Text style={styles.textButtonH}>Pomodoro</Text>
             </TouchableOpacity>
@@ -251,7 +274,7 @@ export default function Pomodoro({ isClicked }) {
           <View>
             <TouchableOpacity
               style={styles.buttonHeader}
-              onPress={() => isClicked(true, "short", setDurationTime('short'))}
+              onPress={() => setDurationTime('short')}
             >
               <Text style={styles.textButtonH}>Short Break</Text>
             </TouchableOpacity>
@@ -259,7 +282,7 @@ export default function Pomodoro({ isClicked }) {
           <View>
             <TouchableOpacity
               style={styles.buttonHeader}
-              onPress={() => isClicked(true, "long", setDurationTime('long'))}
+              onPress={() => setDurationTime('long')}
             >
               <Text style={styles.textButtonH}>Long Break</Text>
             </TouchableOpacity>
@@ -277,6 +300,7 @@ export default function Pomodoro({ isClicked }) {
             onComplete={() => {
               setKey(prevKey => prevKey +1)
               setIsPlaying(false)
+              animation.current.pause()
             }}
           >
             {({ remainingTime }) => {
@@ -313,15 +337,26 @@ export default function Pomodoro({ isClicked }) {
      
       </View>
     </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  containerTop: {
+    flex: 1,
+    backgroundColor: '#D9504A',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
     flex: 1,
     padding: 10,
     // justifyContent: 'space-evenly'
     
+  },
+  layout: {
+    flex: 1,backgroundColor: '#D9504A',alignItems: 'center',justifyContent: 'center',
+  
   },
   animationContainer: {
     backgroundColor: '#D9504A',

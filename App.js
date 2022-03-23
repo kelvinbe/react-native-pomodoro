@@ -4,9 +4,11 @@ import { StyleSheet, Text, View,TouchableWithoutFeedback, Keyboard, SafeAreaView
 import Pomodoro from './Pomodoro';
 import { useState } from 'react';
 import SafeViewArea from './SafeViewArea';
-
-
-
+import Slider from './Slider';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import SliderScreen from './screens/SliderScreen';
+import PomoScreen from './screens/PomoScreen';
 export default function App() {
 const [isClicked, setIsClicked] = useState(false)
 const [isLong, setIsLong] = useState(false)
@@ -19,10 +21,12 @@ const [className, setClassName] = useState({flex: 1,backgroundColor: '#D9504A',a
 
 
 // #457CA3
+const Stack = createStackNavigator();
 
 
-const click=(text, value, func) => {
+const click=(text, value, func, bg) => {
       
+  console.log('ChangeInApp', bg)
       if(value === 'pomo' && text === true){
           setClassName({flex: 1,backgroundColor: '#D9504A',alignItems: 'center',justifyContent: 'center'})
       } else if(value === 'short' && text === true){
@@ -45,17 +49,18 @@ const click=(text, value, func) => {
 //   console.log('isClicked', isClicked)
 // console.log('className', className)
   return (
-    <TouchableWithoutFeedback onPress={() => {
-      Keyboard.dismiss();
-      // console.log("Dismissed keyboard");
-    }}>
-      <SafeAreaView style={SafeViewArea.AndroidSafeArea}>
-      <View style={className}>
-      <Pomodoro isClicked={click} />
-      {/* <Text>Hello</Text> */}
-      </View>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+
+
+      <NavigationContainer>
+  
+    <SliderScreen />
+
+    </NavigationContainer>
+
+    
+
+
+
   );
 }
 
@@ -78,5 +83,7 @@ const styles = StyleSheet.create({
   alignItems: 'center',
   justifyContent: 'center',
 
-}
+},
+
+
 });
